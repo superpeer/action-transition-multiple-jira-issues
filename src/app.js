@@ -18,13 +18,15 @@ class App {
       throw new Error("Length of issue-types does not match transitions");
     }
 
+    console.log(this.issueTypes, this.transitions);
+
     this.jira = new Jira();
     this.github = new Github();
   }
 
   async run() {
     const commitMessages = await this.github.getPullRequestCommitMessages();
-    console.log(`Commit messages: ${commitMessages.join(" ")}`);
+    console.log(`Commit messages: ${commitMessages}`);
 
     const issueKeys = this.findIssueKeys(commitMessages);
     if (!issueKeys) {
@@ -32,7 +34,7 @@ class App {
       return;
     }
 
-    console.log(`Found issue keys: ${issueKeys.join(" ")}`);
+    console.log(`Found issue keys: ${issueKeys}`);
     const transitionIssues = await this.getTransitionIdsAndKeys(issueKeys);
     await this.transitionIssues(
       transitionIssues.issueKeys,
@@ -53,6 +55,7 @@ class App {
 
     for (const issue of issues) {
       const issueData = await this.jira.getIssue(issue);
+      console.log(issueData);
       const issueTypeName = issueData.fields.issuetype.name;
       const issueStatus = issueData.fields.status.name;
       const issueTypeIndex = this.issueTypes.indexOf(issueTypeName);
