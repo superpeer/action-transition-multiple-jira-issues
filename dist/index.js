@@ -8448,7 +8448,7 @@ class App {
       .filter((issue) => issue.fields.status.name !== this.targetStatus)
       .map((issue) => {
         const summary = issue.fields.summary;
-        const issueUrl = `${this.jira.getBaseUrl()}/browse/${issue.key}`;
+        const issueUrl = `${this.jira.getBaseUrl()}/browse/${issue.key})`;
         return `- ${summary} ([${issue.key}](${issueUrl})`;
       });
 
