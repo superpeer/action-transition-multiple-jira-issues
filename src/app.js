@@ -37,18 +37,20 @@ class App {
   }
 
   async getTransitionIds(issues) {
-    return issues.map(async (issue) => {
-      const { transitions } = await this.jira.getIssueTransitions(issue);
-      const targetTransition = transitions.find(
-        ({ name }) => name === this.targetStatus
-      );
-      if (!targetTransition) {
-        throw new Error(
-          `Cannot find transition to status "${this.targetStatus}"`
+    return await Promise.all(
+      issues.map(async (issue) => {
+        const { transitions } = await this.jira.getIssueTransitions(issue);
+        const targetTransition = transitions.find(
+          ({ name }) => name === this.targetStatus
         );
-      }
-      return targetTransition.id;
-    });
+        if (!targetTransition) {
+          throw new Error(
+            `Cannot find transition to status "${this.targetStatus}"`
+          );
+        }
+        return targetTransition.id;
+      })
+    );
   }
 
   async transitionIssues(issues, transitionsIds) {
