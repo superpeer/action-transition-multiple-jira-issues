@@ -24,8 +24,8 @@ class App {
 
     console.log(`Found issue keys: ${issueKeys.join(", ")}`);
     const transitionIds = await this.getTransitionIds(issueKeys);
-    await this.transitionIssues(issueKeys, transitionIds);
     await this.publishCommentWithIssues(issueKeys);
+    await this.transitionIssues(issueKeys, transitionIds);
   }
 
   async publishCommentWithIssues(issueKeys) {
@@ -33,11 +33,13 @@ class App {
       issueKeys.map((issueKey) => this.jira.getIssue(issueKey))
     );
 
-    const issueList = issuesData.map((issue) => {
-      const summary = issue.fields.summary;
-      const issueUrl = `${this.jira.getBaseUrl()})/browse/${issue.key}`;
-      return `- ${summary} ([${issue.key}](${issueUrl})`;
-    });
+    const issueList = issuesData
+      .filter((issue) => issue.fields.status.name !== this.targetStatus)
+      .map((issue) => {
+        const summary = issue.fields.summary;
+        const issueUrl = `${this.jira.getBaseUrl()})/browse/${issue.key}`;
+        return `- ${summary} ([${issue.key}](${issueUrl})`;
+      });
 
     if (issueList.length > 0) {
       const body =
