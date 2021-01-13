@@ -37,14 +37,14 @@ class App {
       .filter((issue) => issue.fields.status.name !== this.targetStatus)
       .map((issue) => {
         const summary = issue.fields.summary;
-        const issueUrl = `${this.jira.getBaseUrl()})/browse/${issue.key}`;
+        const issueUrl = `${this.jira.getBaseUrl()}/browse/${issue.key}`;
         return `- ${summary} ([${issue.key}](${issueUrl})`;
       });
 
     if (issueList.length > 0) {
       const body =
-        `These issues have been moved to *${this.targetStatus}*:\n` + issueList;
-      console.log("Publishing comment to PR:", body);
+        `These issues have been moved to *${this.targetStatus}*:\n` +
+        issueList.join("\n");
       await this.github.publishComment(body);
     }
   }
