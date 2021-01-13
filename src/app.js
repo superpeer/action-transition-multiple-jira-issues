@@ -20,13 +20,30 @@ class App {
 
     const issueKeys = this.findIssueKeys(commitMessages);
     if (!issueKeys) {
-      console.log(`Commit messages doesn't contain any issue keys`);
+      console.log(`Commit messages do not contain any issue keys`);
       return;
     }
 
     console.log(`Found issue keys: ${issueKeys}`);
     const transitionIds = await this.getTransitionIds(issueKeys);
     await this.transitionIssues(issueKeys, transitionIds);
+    await this.publishCommentWithIssues(issueKeys);
+  }
+
+  async publishCommentWithIssues(issueKeys) {
+    const issuesData = await Promise.all(
+      issueKeys.map((issueKey) => this.jira.getIssue(issueKey))
+    );
+
+    const issueList = issuesData.map((issue) => {
+      const summary = issue.fields.summary;
+      const issueUrl = `${this.jira.getBaseUrl()})/browse/${issue.key}`;
+      return `- ${summary} ([${issue.key}](${issueUrl})`;
+    });
+
+    await this.github.publishComment(
+      `These issues have been moved to *${this.targetStatus}*: ` + issueList
+    );
   }
 
   findIssueKeys(commitMessages) {
