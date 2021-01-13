@@ -8428,7 +8428,7 @@ class App {
   async run() {
     const commitMessages = await this.github.getPullRequestCommitMessages();
     const issueKeys = this.findIssueKeys(commitMessages);
-    if (!issueKeys) {
+    if (issueKeys.length === 0) {
       console.log(`Commit messages do not contain any issue keys`);
       return;
     }
@@ -8444,18 +8444,16 @@ class App {
       issueKeys.map((issueKey) => this.jira.getIssue(issueKey))
     );
 
-    const issueList = issuesData
-      .filter((issue) => issue.fields.status.name !== this.targetStatus)
-      .map((issue) => {
-        const summary = issue.fields.summary;
-        const issueUrl = `${this.jira.getBaseUrl()})/browse/${issue.key}`;
-        return `- ${summary} ([${issue.key}](${issueUrl})`;
-      });
+    const issueList = issuesData.map((issue) => {
+      const summary = issue.fields.summary;
+      const issueUrl = `${this.jira.getBaseUrl()})/browse/${issue.key}`;
+      return `- ${summary} ([${issue.key}](${issueUrl})`;
+    });
 
-    if (issueList) {
+    if (issueList.length > 0) {
       const body =
         `These issues have been moved to *${this.targetStatus}*:\n` + issueList;
-      console.log(body);
+      console.log("Publishing comment to PR:", body);
       await this.github.publishComment(body);
     }
   }
