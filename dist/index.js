@@ -8427,17 +8427,34 @@ class App {
 
   async run() {
     const commitMessages = await this.github.getPullRequestCommitMessages();
-    console.log(`Commit messages: ${commitMessages}`);
-
     const issueKeys = this.findIssueKeys(commitMessages);
     if (!issueKeys) {
-      console.log(`Commit messages doesn't contain any issue keys`);
+      console.log(`Commit messages do not contain any issue keys`);
       return;
     }
 
-    console.log(`Found issue keys: ${issueKeys}`);
+    console.log(`Found issue keys: ${issueKeys.join(", ")}`);
     const transitionIds = await this.getTransitionIds(issueKeys);
     await this.transitionIssues(issueKeys, transitionIds);
+    await this.publishCommentWithIssues(issueKeys);
+  }
+
+  async publishCommentWithIssues(issueKeys) {
+    const issuesData = await Promise.all(
+      issueKeys.map((issueKey) => this.jira.getIssue(issueKey))
+    );
+
+    const issueList = issuesData
+      .filter((issue) => issue.fields.status.name !== this.targetStatus)
+      .map((issue) => {
+        const summary = issue.fields.summary;
+        const issueUrl = `${this.jira.getBaseUrl()})/browse/${issue.key}`;
+        return `- ${summary} ([${issue.key}](${issueUrl})`;
+      });
+
+    await this.github.publishComment(
+      `These issues have been moved to *${this.targetStatus}*: ` + issueList
+    );
   }
 
   findIssueKeys(commitMessages) {
@@ -8508,6 +8525,15 @@ class Github {
 
     return data.map((x) => x.commit.message);
   }
+
+  async publishComment(body) {
+    await this.octokit.issues.createComment({
+      owner: github.context.issue.owner,
+      repo: github.context.issue.repo,
+      issue_number: github.context.issue.number,
+      body,
+    });
+  }
 }
 
 module.exports = Github;
@@ -8539,6 +8565,16 @@ class Jira {
         Authorization: `Basic ${token}`,
       },
     });
+  }
+
+  getBaseUrl() {
+    return core.getInput("jira-base-url");
+  }
+
+  async getIssue(issueId) {
+    const path = `issue/${issueId}`;
+    const { data } = await this.api.get(path);
+    return data;
   }
 
   async getIssueTransitions(issueId) {

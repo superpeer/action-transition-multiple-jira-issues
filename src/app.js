@@ -16,15 +16,13 @@ class App {
 
   async run() {
     const commitMessages = await this.github.getPullRequestCommitMessages();
-    console.log(`Commit messages: ${commitMessages}`);
-
     const issueKeys = this.findIssueKeys(commitMessages);
     if (!issueKeys) {
       console.log(`Commit messages do not contain any issue keys`);
       return;
     }
 
-    console.log(`Found issue keys: ${issueKeys}`);
+    console.log(`Found issue keys: ${issueKeys.join(", ")}`);
     const transitionIds = await this.getTransitionIds(issueKeys);
     await this.transitionIssues(issueKeys, transitionIds);
     await this.publishCommentWithIssues(issueKeys);
@@ -35,11 +33,13 @@ class App {
       issueKeys.map((issueKey) => this.jira.getIssue(issueKey))
     );
 
-    const issueList = issuesData.map((issue) => {
-      const summary = issue.fields.summary;
-      const issueUrl = `${this.jira.getBaseUrl()})/browse/${issue.key}`;
-      return `- ${summary} ([${issue.key}](${issueUrl})`;
-    });
+    const issueList = issuesData
+      .filter((issue) => issue.fields.status.name !== this.targetStatus)
+      .map((issue) => {
+        const summary = issue.fields.summary;
+        const issueUrl = `${this.jira.getBaseUrl()})/browse/${issue.key}`;
+        return `- ${summary} ([${issue.key}](${issueUrl})`;
+      });
 
     await this.github.publishComment(
       `These issues have been moved to *${this.targetStatus}*: ` + issueList
