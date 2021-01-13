@@ -8453,9 +8453,10 @@ class App {
       });
 
     if (issueList) {
-      await this.github.publishComment(
-        `These issues have been moved to *${this.targetStatus}*:\n` + issueList
-      );
+      const body =
+        `These issues have been moved to *${this.targetStatus}*:\n` + issueList;
+      console.log(body);
+      await this.github.publishComment(body);
     }
   }
 
