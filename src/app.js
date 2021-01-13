@@ -4,18 +4,10 @@ const Github = require("./github");
 
 class App {
   constructor() {
-    const issueTypes = core.getInput("issue-types");
-    const transitions = core.getInput("transitions");
+    this.targetStatus = core.getInput("target-status");
 
-    if (!issueTypes || !transitions) {
-      throw new Error("Missing issue types or transitions");
-    }
-
-    this.issueTypes = issueTypes.split(/,\s*/);
-    this.transitions = transitions.split(/,\s*/);
-
-    if (this.issueTypes.length !== this.transitions.length) {
-      throw new Error("Length of issue-types does not match transitions");
+    if (!this.targetStatus) {
+      throw new Error("Missing target status input");
     }
 
     this.jira = new Jira();
@@ -24,20 +16,37 @@ class App {
 
   async run() {
     const commitMessages = await this.github.getPullRequestCommitMessages();
-    console.log(`Commit messages: ${commitMessages.join(" ")}`);
-
     const issueKeys = this.findIssueKeys(commitMessages);
-    if (!issueKeys) {
-      console.log(`Commit messages doesn't contain any issue keys`);
+    if (issueKeys.length === 0) {
+      console.log(`Commit messages do not contain any issue keys`);
       return;
     }
 
-    console.log(`Found issue keys: ${issueKeys.join(" ")}`);
-    const transitionIssues = await this.getTransitionIdsAndKeys(issueKeys);
-    await this.transitionIssues(
-      transitionIssues.issueKeys,
-      transitionIssues.transitionIds
+    console.log(`Found issue keys: ${issueKeys.join(", ")}`);
+    const transitionIds = await this.getTransitionIds(issueKeys);
+    await this.publishCommentWithIssues(issueKeys);
+    await this.transitionIssues(issueKeys, transitionIds);
+  }
+
+  async publishCommentWithIssues(issueKeys) {
+    const issuesData = await Promise.all(
+      issueKeys.map((issueKey) => this.jira.getIssue(issueKey))
     );
+
+    const issueList = issuesData
+      .filter((issue) => issue.fields.status.name !== this.targetStatus)
+      .map((issue) => {
+        const summary = issue.fields.summary;
+        const issueUrl = `${this.jira.getBaseUrl()}/browse/${issue.key})`;
+        return `- ${summary} ([${issue.key}](${issueUrl})`;
+      });
+
+    if (issueList.length > 0) {
+      const body =
+        `These issues have been moved to *${this.targetStatus}*:\n` +
+        issueList.join("\n");
+      await this.github.publishComment(body);
+    }
   }
 
   findIssueKeys(commitMessages) {
@@ -47,45 +56,28 @@ class App {
     return [...new Set(matches)];
   }
 
-  async getTransitionIdsAndKeys(issues) {
-    const transitionIds = [];
-    const issueKeys = [];
-
-    for (const issue of issues) {
-      const issueData = await this.jira.getIssue(issue);
-      const issueTypeName = issueData.fields.issuetype.name;
-      const issueStatus = issueData.fields.status.name;
-      const issueTypeIndex = this.issueTypes.indexOf(issueTypeName);
-      const targetStatus = this.transitions[issueTypeIndex];
-
-      if (targetStatus === issueStatus) {
-        console.log(`Issue ${issue} is already in ${issueStatus} status`);
-        continue;
-      }
-
-      issueKeys.push(issue);
-      const { transitions } = await this.jira.getIssueTransitions(issue);
-      const targetTransition = transitions.find((x) => x.name === targetStatus);
-
-      if (!targetTransition) {
-        throw new Error(`Cannot find transition "${targetStatus}"`);
-      }
-
-      transitionIds.push({
-        id: targetTransition.id,
-        name: targetTransition.name,
-      });
-    }
-
-    return { issueKeys, transitionIds };
+  async getTransitionIds(issues) {
+    return await Promise.all(
+      issues.map(async (issue) => {
+        const { transitions } = await this.jira.getIssueTransitions(issue);
+        const targetTransition = transitions.find(
+          ({ name }) => name === this.targetStatus
+        );
+        if (!targetTransition) {
+          throw new Error(
+            `Cannot find transition to status "${this.targetStatus}"`
+          );
+        }
+        return targetTransition.id;
+      })
+    );
   }
 
-  async transitionIssues(issues, transitionIds) {
+  async transitionIssues(issues, transitionsIds) {
     for (let i = 0; i < issues.length; i++) {
       const issue = issues[i];
-      const transition = transitionIds[i];
-      console.log(`Transition issue "${issue}" to "${transition.name}"`);
-      await this.jira.transitionIssue(issue, transition.id);
+      const transitionId = transitionsIds[i];
+      await this.jira.transitionIssue(issue, transitionId);
     }
   }
 }

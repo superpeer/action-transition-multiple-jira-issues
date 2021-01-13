@@ -21,6 +21,10 @@ class Jira {
     });
   }
 
+  getBaseUrl() {
+    return core.getInput("jira-base-url");
+  }
+
   async getIssue(issueId) {
     const path = `issue/${issueId}`;
     const { data } = await this.api.get(path);

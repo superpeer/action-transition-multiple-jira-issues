@@ -25,6 +25,15 @@ class Github {
 
     return data.map((x) => x.commit.message);
   }
+
+  async publishComment(body) {
+    await this.octokit.issues.createComment({
+      owner: github.context.issue.owner,
+      repo: github.context.issue.repo,
+      issue_number: github.context.issue.number,
+      body,
+    });
+  }
 }
 
 module.exports = Github;
