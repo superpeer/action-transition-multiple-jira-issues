@@ -11,6 +11,7 @@ Find Jira issue keys from commit messages in pull requests and transition them
     jira-base-url: https://<yourdomain>.atlassian.net
     jira-user-email: human@example.com
     jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
+    github-token: ${{ secrets.GITHUB_TOKEN }}
     issue-types: Story, Bug
     transitions: In Progress, In Progress
 ```
@@ -24,6 +25,7 @@ Find Jira issue keys from commit messages in pull requests and transition them
 | jira-user-email | Email of the user for which Access Token was created for        | ✔            |
 | issue-types     | Type of issues on your workflow. It will map with `transitions` | ✔            |
 | transitions     | Transitions status to move each issue type                      | ✔            |
+| github-token    | Your everyday GitHub token                                      | ✔            |
 
 ## References
 
