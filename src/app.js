@@ -41,9 +41,11 @@ class App {
         return `- ${summary} ([${issue.key}](${issueUrl})`;
       });
 
-    await this.github.publishComment(
-      `These issues have been moved to *${this.targetStatus}*: ` + issueList
-    );
+    if (issueList) {
+      await this.github.publishComment(
+        `These issues have been moved to *${this.targetStatus}*:\n` + issueList
+      );
+    }
   }
 
   findIssueKeys(commitMessages) {
