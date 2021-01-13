@@ -21,12 +21,6 @@ class Jira {
     });
   }
 
-  async getIssue(issueId) {
-    const path = `issue/${issueId}`;
-    const { data } = await this.api.get(path);
-    return data;
-  }
-
   async getIssueTransitions(issueId) {
     const path = `issue/${issueId}/transitions`;
     const { data } = await this.api.get(path);

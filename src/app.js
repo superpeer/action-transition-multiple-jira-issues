@@ -4,21 +4,11 @@ const Github = require("./github");
 
 class App {
   constructor() {
-    const issueTypes = core.getInput("issue-types");
-    const transitions = core.getInput("transitions");
+    this.targetStatus = core.getInput("target-status");
 
-    if (!issueTypes || !transitions) {
-      throw new Error("Missing issue types or transitions");
+    if (!this.targetStatus) {
+      throw new Error("Missing target status input");
     }
-
-    this.issueTypes = issueTypes.split(/,\s*/);
-    this.transitions = transitions.split(/,\s*/);
-
-    if (this.issueTypes.length !== this.transitions.length) {
-      throw new Error("Length of issue-types does not match transitions");
-    }
-
-    console.log(this.issueTypes, this.transitions);
 
     this.jira = new Jira();
     this.github = new Github();
@@ -35,11 +25,8 @@ class App {
     }
 
     console.log(`Found issue keys: ${issueKeys}`);
-    const transitionIssues = await this.getTransitionIdsAndKeys(issueKeys);
-    await this.transitionIssues(
-      transitionIssues.issueKeys,
-      transitionIssues.transitionIds
-    );
+    const transitionIds = await this.getTransitionIds(issueKeys);
+    await this.transitionIssues(issueKeys, transitionIds);
   }
 
   findIssueKeys(commitMessages) {
@@ -49,46 +36,26 @@ class App {
     return [...new Set(matches)];
   }
 
-  async getTransitionIdsAndKeys(issues) {
-    const transitionIds = [];
-    const issueKeys = [];
-
-    for (const issue of issues) {
-      const issueData = await this.jira.getIssue(issue);
-      console.log(issueData);
-      const issueTypeName = issueData.fields.issuetype.name;
-      const issueStatus = issueData.fields.status.name;
-      const issueTypeIndex = this.issueTypes.indexOf(issueTypeName);
-      const targetStatus = this.transitions[issueTypeIndex];
-
-      if (targetStatus === issueStatus) {
-        console.log(`Issue ${issue} is already in ${issueStatus} status`);
-        continue;
-      }
-
-      issueKeys.push(issue);
+  async getTransitionIds(issues) {
+    return issues.map(async (issue) => {
       const { transitions } = await this.jira.getIssueTransitions(issue);
-      const targetTransition = transitions.find((x) => x.name === targetStatus);
-
+      const targetTransition = transitions.find(
+        ({ name }) => name === this.targetStatus
+      );
       if (!targetTransition) {
-        throw new Error(`Cannot find transition "${targetStatus}"`);
+        throw new Error(
+          `Cannot find transition to status "${this.targetStatus}"`
+        );
       }
-
-      transitionIds.push({
-        id: targetTransition.id,
-        name: targetTransition.name,
-      });
-    }
-
-    return { issueKeys, transitionIds };
+      return targetTransition.id;
+    });
   }
 
-  async transitionIssues(issues, transitionIds) {
+  async transitionIssues(issues, transitionsIds) {
     for (let i = 0; i < issues.length; i++) {
       const issue = issues[i];
-      const transition = transitionIds[i];
-      console.log(`Transition issue "${issue}" to "${transition.name}"`);
-      await this.jira.transitionIssue(issue, transition.id);
+      const transitionId = transitionsIds[i];
+      await this.jira.transitionIssue(issue, transitionId);
     }
   }
 }

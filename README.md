@@ -12,20 +12,18 @@ Find Jira issue keys from commit messages in pull requests and transition them
     jira-user-email: human@example.com
     jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
     github-token: ${{ secrets.GITHUB_TOKEN }}
-    issue-types: Story, Bug
-    transitions: In Progress, In Progress
+    target-status: In Progress
 ```
 
 ## Inputs
 
-| **Name**        | **Description**                                                 | **Required** |
-| --------------- | --------------------------------------------------------------- | ------------ |
-| jira-base-url   | URL of Jira instance                                            | ✔            |
-| jira-api-token  | Access Token for Authorization                                  | ✔            |
-| jira-user-email | Email of the user for which Access Token was created for        | ✔            |
-| issue-types     | Type of issues on your workflow. It will map with `transitions` | ✔            |
-| transitions     | Transitions status to move each issue type                      | ✔            |
-| github-token    | Your everyday GitHub token                                      | ✔            |
+| **Name**        | **Description**                                                           | **Required** |
+| --------------- | ------------------------------------------------------------------------- | ------------ |
+| jira-base-url   | URL of Jira instance                                                      | ✔            |
+| jira-api-token  | Access Token for Authorization                                            | ✔            |
+| jira-user-email | Email of the user for which Access Token was created for                  | ✔            |
+| github-token    | Your everyday GitHub token                                                | ✔            |
+| target-status   | To which status the issues found in the pull request should transition to | ✔            |
 
 ## References
 

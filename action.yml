@@ -7,11 +7,8 @@ inputs:
   github-token:
     description: Your everyday GitHub token used for GitHub Actions
     required: true
-  issue-types:
-    description: The issue types to be transitioned It's relevant with 'transitions' order, e.g, 'Story,Bug,Task'
-    required: true
-  transitions:
-    description: The transitions to apply to the issue. It's relevant with 'issuetypes' order, e.g. 'To Do,In Progress,In Progress'
+  target-status:
+    description: To which status the issues found in the pull request should transition to
     required: true
   jira-base-url:
     description: URL of Jira instance
