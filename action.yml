@@ -1,4 +1,4 @@
-name: Transition multiple jira issues
+name: Transition multiple Jira issues
 description: Find Jira issue keys from commit messages in pull requests and transition them
 branding:
   icon: move
