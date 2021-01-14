@@ -13,6 +13,8 @@ class App {
 
     if (this.ignoreStatuses) {
       this.ignoreStatuses = this.ignoreStatuses.split(/,\s*/);
+      this.ignoreStatuses.push(this.targetStatus);
+      console.log(this.ignoreStatuses);
     }
 
     this.jira = new Jira();
@@ -52,7 +54,7 @@ class App {
     const issuesData = await Promise.all(issueKeys.map((issueKey) => this.jira.getIssue(issueKey)));
     return issuesData.filter((issue) => {
       const status = issue.fields.status.name;
-      return status !== this.targetStatus || !this.ignoreStatuses.includes(status);
+      return !this.ignoreStatuses.includes(status);
     });
   }
 
