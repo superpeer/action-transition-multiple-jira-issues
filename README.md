@@ -24,6 +24,7 @@ Find Jira issue keys from commit messages in pull requests and transition them
 | jira-user-email | Email of the user for which Access Token was created for                  | ✔            |
 | github-token    | Your everyday GitHub token                                                | ✔            |
 | target-status   | To which status the issues found in the pull request should transition to | ✔            |
+| ignore-statuses | Comma separated list of statuses to ignore                                | ❌           |
 
 ## References
 
