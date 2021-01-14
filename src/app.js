@@ -29,9 +29,7 @@ class App {
   }
 
   async publishCommentWithIssues(issueKeys) {
-    const issuesData = await Promise.all(
-      issueKeys.map((issueKey) => this.jira.getIssue(issueKey))
-    );
+    const issuesData = await Promise.all(issueKeys.map((issueKey) => this.jira.getIssue(issueKey)));
 
     const issueList = issuesData
       .filter((issue) => issue.fields.status.name !== this.targetStatus)
@@ -42,9 +40,7 @@ class App {
       });
 
     if (issueList.length > 0) {
-      const body =
-        `These issues have been moved to *${this.targetStatus}*:\n` +
-        issueList.join("\n");
+      const body = `These issues have been moved to *${this.targetStatus}*:\n` + issueList.join("\n");
       await this.github.publishComment(body);
     }
   }
