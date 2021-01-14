@@ -8440,9 +8440,7 @@ class App {
   }
 
   async publishCommentWithIssues(issueKeys) {
-    const issuesData = await Promise.all(
-      issueKeys.map((issueKey) => this.jira.getIssue(issueKey))
-    );
+    const issuesData = await Promise.all(issueKeys.map((issueKey) => this.jira.getIssue(issueKey)));
 
     const issueList = issuesData
       .filter((issue) => issue.fields.status.name !== this.targetStatus)
@@ -8453,9 +8451,7 @@ class App {
       });
 
     if (issueList.length > 0) {
-      const body =
-        `These issues have been moved to *${this.targetStatus}*:\n` +
-        issueList.join("\n");
+      const body = `These issues have been moved to *${this.targetStatus}*:\n` + issueList.join("\n");
       await this.github.publishComment(body);
     }
   }
@@ -8468,20 +8464,20 @@ class App {
   }
 
   async getTransitionIds(issues) {
-    return await Promise.all(
+    const transitionIds = await Promise.all(
       issues.map(async (issue) => {
         const { transitions } = await this.jira.getIssueTransitions(issue);
-        const targetTransition = transitions.find(
-          ({ name }) => name === this.targetStatus
-        );
+        console.log(transitions);
+        const targetTransition = transitions.find(({ name }) => name === this.targetStatus);
         if (!targetTransition) {
-          throw new Error(
-            `Cannot find transition to status "${this.targetStatus}"`
-          );
+          console.log(`Cannot find transition to status "${this.targetStatus}"`);
+          return null;
         }
         return targetTransition.id;
       })
     );
+
+    return transitionIds.filter(Boolean);
   }
 
   async transitionIssues(issues, transitionsIds) {
