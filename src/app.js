@@ -5,17 +5,13 @@ const Github = require("./github");
 class App {
   constructor() {
     this.targetStatus = core.getInput("target-status");
-    this.ignoreStatuses = core.getInput("ignore-statuses");
-
     if (!this.targetStatus) {
       throw new Error("Missing target status input");
     }
 
-    if (this.ignoreStatuses) {
-      this.ignoreStatuses = this.ignoreStatuses.split(/,\s*/);
-      this.ignoreStatuses.push(this.targetStatus);
-      console.log(this.ignoreStatuses);
-    }
+    this.ignoreStatuses = core.getInput("ignore-statuses");
+    this.ignoreStatuses = this.ignoreStatuses ? this.ignoreStatuses.split(/,\s*/) : [];
+    this.ignoreStatuses.push(this.targetStatus);
 
     this.jira = new Jira();
     this.github = new Github();
