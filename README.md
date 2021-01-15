@@ -13,6 +13,8 @@ Find Jira issue keys from commit messages in pull requests and transition them
     jira-api-token: ${{ secrets.JIRA_API_TOKEN }}
     github-token: ${{ secrets.GITHUB_TOKEN }}
     target-status: In Progress
+    issue-prefixes: BB, P1
+    ignore-statuses: Done, QA
 ```
 
 ## Inputs
@@ -23,6 +25,7 @@ Find Jira issue keys from commit messages in pull requests and transition them
 | jira-api-token  | Access Token for Authorization                                            | ✔            |
 | jira-user-email | Email of the user for which Access Token was created for                  | ✔            |
 | github-token    | Your everyday GitHub token                                                | ✔            |
+| issue-prefixes  | Comma separated list of the prefixes to scan                              | ✔            |
 | target-status   | To which status the issues found in the pull request should transition to | ✔            |
 | ignore-statuses | Comma separated list of statuses to ignore                                | ❌           |
 
