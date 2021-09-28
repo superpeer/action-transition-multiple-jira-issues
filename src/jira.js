@@ -101,7 +101,7 @@ class Jira {
   }
 
   async updateIssueFixVersion(issueId, versionId, versionName) {
-    console.log(`updating issue fix version for: issue/${issueId} with: ${versionId}`);
+    console.log(`updating issue fix version for: issue/${issueId} with: ${versionId} and ${versionName}`);
 
     const { data } = await this.api.put(`issue/${issueId}`, {
       update: {

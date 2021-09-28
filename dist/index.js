@@ -12505,11 +12505,11 @@ class App {
     }
   }
 
-  async updateIssueFixVersions(issueList, versionId) {
+  async updateIssueFixVersions(issueList, versionId, versionName) {
     for (let i = 0; i < issueList.length; i++) {
       const issueKey = issueList[i].key;
 
-      await this.jira.updateIssueFixVersion(issueKey, versionId);
+      await this.jira.updateIssueFixVersion(issueKey, versionId, versionName);
     }
   }
 }
@@ -12673,7 +12673,7 @@ class Jira {
   }
 
   async updateIssueFixVersion(issueId, versionId, versionName) {
-    console.log(`updating issue fix version for: issue/${issueId} with: ${versionId}`);
+    console.log(`updating issue fix version for: issue/${issueId} with: ${versionId} and ${versionName}`);
 
     const { data } = await this.api.put(`issue/${issueId}`, {
       update: {
