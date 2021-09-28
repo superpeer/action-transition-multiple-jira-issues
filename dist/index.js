@@ -12418,8 +12418,6 @@ class App {
     const transitionIds = await this.getTransitionIds(issueList);
     const currentVersion = await this.jira.findTargetVersion();
 
-    console.log('Found version', currentVersion);
-
     if (this.shouldDoTransitions) {
       console.log('Starting issue transitions');
       await this.transitionIssues(issueList, transitionIds);
@@ -12675,7 +12673,7 @@ class Jira {
   }
 
   async updateIssueFixVersion(issueId, versionId) {
-    console.log('updating issue fix version');
+    console.log(`updating issue fix version for: issue/${issueId} with: ${versionId}`);
 
     const { data } = await this.api.put(`issue/${issueId}`, {
       update: {
