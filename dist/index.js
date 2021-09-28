@@ -12389,6 +12389,11 @@ class App {
     this.shouldDoTransitions = core.getInput('do-transitions') === 'true';
     this.shouldReleaseVersion = core.getInput('release-version') === 'true';
 
+    console.log({
+      shouldDoTransitions: this.shouldDoTransitions,
+      shouldReleaseVersion: this.shouldReleaseVersion,
+    });
+
     if (!this.isssuePrefixes) {
       throw new Error('Missing issue prefixes input');
     }
@@ -12488,6 +12493,7 @@ class App {
 
           return null;
         }
+
         return targetTransition.id;
       }),
     );
@@ -12641,13 +12647,8 @@ class Jira {
     const path = `project/${this.projectKey}/version?orderBy=-sequence`;
 
     console.log('Fetching the latest version for:', path);
-    let data = null;
 
-    try {
-      ({ data } = await this.api.get(path));
-    } catch (e) {
-      console.log(e.message);
-    }
+    const { data } = await this.api.get(path);
 
     return data.values[0];
   }
