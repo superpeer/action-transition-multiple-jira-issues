@@ -1,19 +1,10 @@
-// const core = require('@actions/core');
-// const App = require('./src/app');
+const core = require('@actions/core');
+const App = require('./src/app');
 
-// try {
-//   const app = new App();
-//   app.run();
-// } catch (error) {
-//   core.setFailed(error.toString());
-// }
+try {
+  const app = new App();
 
-const Jira = require('./src/jira');
-
-(async () => {
-  const jira = new Jira();
-
-  const version = await jira.findTargetVersion();
-  await jira.updateIssueFixVersion('PLY-1', version.name);
-  await jira.releaseVersion(version.id);
-})();
+  app.run();
+} catch (error) {
+  core.setFailed(error.toString());
+}

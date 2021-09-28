@@ -46,7 +46,7 @@ class App {
       await this.publishCommentWithIssues(issueList);
     } else {
       console.log('Starting to set Jira fix versions');
-      await this.updateIssueFixVersions(issueList, currentVersion.id);
+      await this.updateIssueFixVersions(issueList, currentVersion.id, currentVersion.name);
     }
 
     if (this.shouldReleaseVersion) {
@@ -108,6 +108,7 @@ class App {
 
           return null;
         }
+
         return targetTransition.id;
       }),
     );

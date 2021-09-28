@@ -12426,7 +12426,7 @@ class App {
       await this.publishCommentWithIssues(issueList);
     } else {
       console.log('Starting to set Jira fix versions');
-      await this.updateIssueFixVersions(issueList, currentVersion.id);
+      await this.updateIssueFixVersions(issueList, currentVersion.id, currentVersion.name);
     }
 
     if (this.shouldReleaseVersion) {
@@ -12672,20 +12672,16 @@ class Jira {
     });
   }
 
-  async updateIssueFixVersion(issueId, versionId) {
+  async updateIssueFixVersion(issueId, versionId, versionName) {
     console.log(`updating issue fix version for: issue/${issueId} with: ${versionId}`);
 
-    try {
-      const { data } = await this.api.put(`issue/${issueId}`, {
-        update: {
-          fixVersions: [{ add: { name: '14' } }],
-        },
-      });
+    const { data } = await this.api.put(`issue/${issueId}`, {
+      update: {
+        fixVersions: [{ add: { name: versionName } }],
+      },
+    });
 
-      return data;
-    } catch (e) {
-      console.log(e.message);
-    }
+    return data;
   }
 
   static getDate() {

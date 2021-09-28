@@ -60,7 +60,10 @@ class Jira {
     if (!version || Jira.isVersionReleased(version)) {
       const nextVersionName = Jira.proposeVersionNumber(version);
 
+      console.log('Creating a new version', nextVersionName);
       version = await this.createNewVersion(nextVersionName);
+    } else {
+      console.log('Reusing an existing version', version.name);
     }
 
     return version;
@@ -73,7 +76,6 @@ class Jira {
 
     const { data } = await this.api.get(path);
 
-    console.log(data.values[0]);
     return data.values[0];
   }
 
@@ -98,12 +100,12 @@ class Jira {
     });
   }
 
-  async updateIssueFixVersion(issueId, versionId) {
-    console.log('updating issue fix version');
+  async updateIssueFixVersion(issueId, versionId, versionName) {
+    console.log(`updating issue fix version for: issue/${issueId} with: ${versionId}`);
 
     const { data } = await this.api.put(`issue/${issueId}`, {
       update: {
-        fixVersions: [{ add: { name: versionId } }],
+        fixVersions: [{ add: { name: versionName } }],
       },
     });
 
