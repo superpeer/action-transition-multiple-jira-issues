@@ -1,4 +1,4 @@
-# action-transition-multiple-jira-issues
+# Jira Issue Transition Action
 
 Find Jira issue keys from commit messages in pull requests and transition them
 
