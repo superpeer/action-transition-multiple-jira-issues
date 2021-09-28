@@ -6,7 +6,7 @@ Find Jira issue keys from commit messages in pull requests and transition them
 
 ```yaml
 - name: Jira find and transition issues
-  uses: bloobirds-it/action-transition-multiple-jira-issues@v1.1.0
+  uses: superpeer/jira-issue-transition-action
   with:
     jira-base-url: https://<yourdomain>.atlassian.net
     jira-user-email: human@example.com

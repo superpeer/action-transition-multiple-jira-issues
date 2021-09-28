@@ -1,26 +1,28 @@
-const github = require("@actions/github");
-const core = require("@actions/core");
+const github = require('@actions/github');
+const core = require('@actions/core');
 
 class Github {
   constructor() {
-    const token = core.getInput("github-token");
+    const token = core.getInput('github-token');
+    const prNumber = core.getInput('pr-number');
 
     if (!token) {
-      throw new Error("Missing GitHub token input");
+      throw new Error('Missing GitHub token input');
     }
 
     this.octokit = github.getOctokit(token);
+    this.prNumber = prNumber;
   }
 
   async getPullRequestCommitMessages() {
     const { data, status } = await this.octokit.pulls.listCommits({
       owner: github.context.issue.owner,
       repo: github.context.issue.repo,
-      pull_number: github.context.issue.number,
+      pull_number: this.prNumber,
     });
 
     if (status !== 200) {
-      throw new Error("Something went wrong fetching commits from PR");
+      throw new Error('Something went wrong fetching commits from PR');
     }
 
     return data.map((x) => x.commit.message);
@@ -30,7 +32,7 @@ class Github {
     await this.octokit.issues.createComment({
       owner: github.context.issue.owner,
       repo: github.context.issue.repo,
-      issue_number: github.context.issue.number,
+      issue_number: this.prNumber,
       body,
     });
   }

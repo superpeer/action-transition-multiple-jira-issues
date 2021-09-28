@@ -1,10 +1,11 @@
 {
-  "name": "@bloobirds-it/action-transition-multiple-jira-issues",
-  "version": "1.1.0",
+  "name": "@superpeer/jira-issue-transition-action",
+  "version": "1.0.0",
   "description": "Find Jira issue keys from commit messages in pull requests and transition them",
   "main": "index.js",
   "license": "ISC",
   "scripts": {
+    "lint": "eslint ./src",
     "build": "ncc build index.js"
   },
   "prettier": {
@@ -16,7 +17,10 @@
     "axios": "^0.21.1"
   },
   "devDependencies": {
-    "prettier": "^2.2.1",
-    "@vercel/ncc": "^0.27.0"
+    "@vercel/ncc": "^0.27.0",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.24.2",
+    "prettier": "^2.2.1"
   }
 }

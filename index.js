@@ -1,5 +1,5 @@
-const core = require("@actions/core");
-const App = require("./src/app");
+const core = require('@actions/core');
+const App = require('./src/app');
 
 try {
   const app = new App();

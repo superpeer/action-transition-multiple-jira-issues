@@ -10,6 +10,9 @@ inputs:
   target-status:
     description: To which status the issues found in the pull request should transition to
     required: true
+  pr-number:
+    description: Pull Request number to get commits to find issue references
+    required: true
   ignore-statuses:
     description: Comma separated list of statuses to ignore
     required: false
