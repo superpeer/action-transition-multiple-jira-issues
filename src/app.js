@@ -46,7 +46,7 @@ class App {
       await this.publishCommentWithIssues(issueList);
     } else {
       console.log('Starting to set Jira fix versions');
-      await this.updateIssueFixVersions(issueList, currentVersion.id);
+      await this.updateIssueFixVersions(issueList, currentVersion.id, currentVersion.name);
     }
 
     if (this.shouldReleaseVersion) {
@@ -108,6 +108,7 @@ class App {
 
           return null;
         }
+
         return targetTransition.id;
       }),
     );
@@ -124,11 +125,11 @@ class App {
     }
   }
 
-  async updateIssueFixVersions(issueList, versionId) {
+  async updateIssueFixVersions(issueList, versionId, versionName) {
     for (let i = 0; i < issueList.length; i++) {
       const issueKey = issueList[i].key;
 
-      await this.jira.updateIssueFixVersion(issueKey, versionId);
+      await this.jira.updateIssueFixVersion(issueKey, versionId, versionName);
     }
   }
 }
