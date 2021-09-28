@@ -12678,7 +12678,7 @@ class Jira {
     try {
       const { data } = await this.api.put(`issue/${issueId}`, {
         update: {
-          fixVersions: [{ add: { name: versionId } }],
+          fixVersions: [{ add: { name: '14' } }],
         },
       });
 
