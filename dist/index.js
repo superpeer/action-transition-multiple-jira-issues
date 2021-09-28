@@ -12389,11 +12389,6 @@ class App {
     this.shouldDoTransitions = core.getInput('do-transitions') === 'true';
     this.shouldReleaseVersion = core.getInput('release-version') === 'true';
 
-    console.log({
-      shouldDoTransitions: this.shouldDoTransitions,
-      shouldReleaseVersion: this.shouldReleaseVersion,
-    });
-
     if (!this.isssuePrefixes) {
       throw new Error('Missing issue prefixes input');
     }
@@ -12422,6 +12417,8 @@ class App {
     const issueList = await this.getIssueListFromKeys(issueKeys);
     const transitionIds = await this.getTransitionIds(issueList);
     const currentVersion = await this.jira.findTargetVersion();
+
+    console.log('Found version', currentVersion);
 
     if (this.shouldDoTransitions) {
       console.log('Starting issue transitions');
@@ -12637,7 +12634,10 @@ class Jira {
     if (!version || Jira.isVersionReleased(version)) {
       const nextVersionName = Jira.proposeVersionNumber(version);
 
+      console.log('Creating a new version', nextVersionName);
       version = await this.createNewVersion(nextVersionName);
+    } else {
+      console.log('Reusing an existing version', version.name);
     }
 
     return version;
