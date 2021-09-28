@@ -4651,10 +4651,14 @@ class Jira {
     const path = `project/${this.projectKey}/version?orderBy=-sequence`;
 
     console.log('Fetching the latest version for:', path);
+    let data = null;
 
-    const { data } = await this.api.get(path);
+    try {
+      ({ data } = await this.api.get(path));
+    } catch (e) {
+      console.log(e);
+    }
 
-    console.log(data.values[0]);
     return data.values[0];
   }
 
