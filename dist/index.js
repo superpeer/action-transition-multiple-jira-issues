@@ -12675,13 +12675,17 @@ class Jira {
   async updateIssueFixVersion(issueId, versionId) {
     console.log(`updating issue fix version for: issue/${issueId} with: ${versionId}`);
 
-    const { data } = await this.api.put(`issue/${issueId}`, {
-      update: {
-        fixVersions: [{ add: { name: versionId } }],
-      },
-    });
+    try {
+      const { data } = await this.api.put(`issue/${issueId}`, {
+        update: {
+          fixVersions: [{ add: { name: versionId } }],
+        },
+      });
 
-    return data;
+      return data;
+    } catch (e) {
+      console.log(e.message);
+    }
   }
 
   static getDate() {
