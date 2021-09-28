@@ -13,12 +13,11 @@ inputs:
   pr-number:
     description: Pull Request number to get commits to find issue references
     required: true
-  ignore-statuses:
-    description: Comma separated list of statuses to ignore
-    required: false
-    default: ""
   issue-prefixes:
     description: Comma separated list of the prefixes to scan
+    required: true
+  jira-project-key:
+    description: Key of your Jira project
     required: true
   jira-base-url:
     description: URL of Jira instance
@@ -29,6 +28,10 @@ inputs:
   jira-user-email:
     description: Email of the user for which Access Token was created for
     required: true
+  ignore-statuses:
+    description: Comma separated list of statuses to ignore
+    required: false
+    default: ""
 runs:
   using: "node12"
   main: "./dist/index.js"
