@@ -4656,7 +4656,7 @@ class Jira {
     try {
       ({ data } = await this.api.get(path));
     } catch (e) {
-      console.log(e.data.errorMessages);
+      console.log(e.message);
     }
 
     return data.values[0];
