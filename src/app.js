@@ -5,19 +5,15 @@ const Github = require('./github');
 class App {
   constructor() {
     this.targetStatus = core.getInput('target-status');
-
-    if (!this.targetStatus) {
-      throw new Error('Missing target status input');
-    }
-
     this.isssuePrefixes = core.getInput('issue-prefixes');
+    this.shouldDoTransitions = core.getInput('do-transitions') === 'true';
+    this.shouldReleaseVersion = core.getInput('release-version') === 'true';
 
     if (!this.isssuePrefixes) {
       throw new Error('Missing issue prefixes input');
     }
 
     this.isssuePrefixes = this.isssuePrefixes.split(/,\s*/);
-
     this.ignoreStatuses = core.getInput('ignore-statuses');
     this.ignoreStatuses = this.ignoreStatuses ? this.ignoreStatuses.split(/,\s*/) : [];
     this.ignoreStatuses.push(this.targetStatus);
@@ -40,8 +36,23 @@ class App {
 
     const issueList = await this.getIssueListFromKeys(issueKeys);
     const transitionIds = await this.getTransitionIds(issueList);
-    await this.transitionIssues(issueList, transitionIds);
-    await this.publishCommentWithIssues(issueList);
+    const currentVersion = await this.jira.findTargetVersion();
+
+    if (this.shouldDoTransitions) {
+      console.log('Starting issue transitions');
+      await this.transitionIssues(issueList, transitionIds);
+
+      console.log('Adding comment to GitHub PR');
+      await this.publishCommentWithIssues(issueList);
+    } else {
+      console.log('Starting to set Jira fix versions');
+      await this.updateIssueFixVersions(issueList, currentVersion.id);
+    }
+
+    if (this.shouldReleaseVersion) {
+      console.log('Relasing the current version');
+      await this.jira.releaseVersion(currentVersion.id);
+    }
   }
 
   async publishCommentWithIssues(issueList) {
@@ -110,6 +121,14 @@ class App {
       const transitionId = transitionsIds[i];
 
       await this.jira.transitionIssue(issueKey, transitionId);
+    }
+  }
+
+  async updateIssueFixVersions(issueList, versionId) {
+    for (let i = 0; i < issueList.length; i++) {
+      const issueKey = issueList[i].key;
+
+      await this.jira.updateIssueFixVersion(issueKey, versionId);
     }
   }
 }

@@ -28,6 +28,14 @@ inputs:
   jira-user-email:
     description: Email of the user for which Access Token was created for
     required: true
+  do-transitions:
+    description: Control the transitions
+    required: false
+    default: "true"
+  release-version:
+    description: Control the releasing current version
+    required: false
+    default: "false"
   ignore-statuses:
     description: Comma separated list of statuses to ignore
     required: false
