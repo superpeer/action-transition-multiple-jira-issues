@@ -1,5 +1,5 @@
 {
-  "name": "@superpeer/jira-issue-transition-action",
+  "name": "@superpeer/chopper",
   "version": "1.0.0",
   "description": "Find Jira issue keys from commit messages in pull requests and transition them",
   "main": "index.js",
