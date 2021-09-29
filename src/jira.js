@@ -7,6 +7,7 @@ class Jira {
     this.apiToken = core.getInput('jira-api-token');
     this.baseUrl = core.getInput('jira-base-url');
     this.projectKey = core.getInput('jira-project-key');
+    this.projectId = core.getInput('jira-project-id');
 
     if (!this.userEmail || !this.apiToken || !this.baseUrl || !this.projectKey) {
       throw new Error('Missing Jira input argument');
@@ -85,7 +86,7 @@ class Jira {
     const { data } = await this.api.post('version', {
       name: nextVersionName,
       startDate: Jira.getDate(),
-      projectId: '10012', // TODO: This needs to be fixed
+      projectId: this.projectId,
     });
 
     return data;

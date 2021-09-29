@@ -4,9 +4,6 @@ branding:
   icon: move
   color: blue
 inputs:
-  github-token:
-    description: Your everyday GitHub token used for GitHub Actions
-    required: true
   target-status:
     description: To which status the issues found in the pull request should transition to
     required: true
@@ -19,6 +16,9 @@ inputs:
   jira-project-key:
     description: Key of your Jira project
     required: true
+  jira-project-id:
+    description: Jira Project Id
+    required: true
   jira-base-url:
     description: URL of Jira instance
     required: true
@@ -27,6 +27,9 @@ inputs:
     required: true
   jira-user-email:
     description: Email of the user for which Access Token was created for
+    required: true
+  github-token:
+    description: Your everyday GitHub token used for GitHub Actions
     required: true
   do-transitions:
     description: Control the transitions
