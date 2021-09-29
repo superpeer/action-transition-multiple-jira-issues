@@ -12448,6 +12448,8 @@ class App {
       const body = `These issues have been moved to *${this.targetStatus}*:\n${issueComment}`;
 
       await this.github.publishComment(body);
+
+      core.setOutput('releaseLog', body);
     }
   }
 
