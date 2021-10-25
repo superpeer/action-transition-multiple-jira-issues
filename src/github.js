@@ -1,10 +1,10 @@
 const github = require('@actions/github');
-const core = require('@actions/core');
+const { getInput, getContextIssueKey } = require('./helpers');
 
 class Github {
   constructor() {
-    const token = core.getInput('github-token');
-    const prNumber = core.getInput('pr-number');
+    const token = getInput('github-token');
+    const prNumber = getInput('pr-number');
 
     if (!token) {
       throw new Error('Missing GitHub token input');
@@ -16,8 +16,8 @@ class Github {
 
   async getPullRequestCommitMessages() {
     const { data, status } = await this.octokit.pulls.listCommits({
-      owner: github.context.issue.owner,
-      repo: github.context.issue.repo,
+      owner: getContextIssueKey('owner'),
+      repo: getContextIssueKey('repo'),
       pull_number: this.prNumber,
     });
 

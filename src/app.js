@@ -1,20 +1,18 @@
 const core = require('@actions/core');
 const Jira = require('./jira');
 const Github = require('./github');
+const ChangelogBuilder = require('./changelog');
+const { getInput } = require('./helpers');
 
 class App {
   constructor() {
-    this.targetStatus = core.getInput('target-status');
-    this.isssuePrefixes = core.getInput('issue-prefixes');
-    this.shouldDoTransitions = core.getInput('do-transitions') === 'true';
-    this.shouldReleaseVersion = core.getInput('release-version') === 'true';
-
-    if (!this.isssuePrefixes) {
-      throw new Error('Missing issue prefixes input');
-    }
+    this.targetStatus = getInput('target-status');
+    this.isssuePrefixes = getInput('issue-prefixes');
+    this.shouldDoTransitions = getInput('do-transitions') === 'true';
+    this.shouldReleaseVersion = getInput('release-version') === 'true';
+    this.ignoreStatuses = getInput('ignore-statuses');
 
     this.isssuePrefixes = this.isssuePrefixes.split(/,\s*/);
-    this.ignoreStatuses = core.getInput('ignore-statuses');
     this.ignoreStatuses = this.ignoreStatuses ? this.ignoreStatuses.split(/,\s*/) : [];
     this.ignoreStatuses.push(this.targetStatus);
 
@@ -52,6 +50,11 @@ class App {
     if (this.shouldReleaseVersion) {
       console.log('Relasing the current version');
       await this.jira.releaseVersion(currentVersion.id);
+
+      console.log('Submitting changelog entries');
+      const changelogBuilder = new ChangelogBuilder(issueList);
+      await changelogBuilder.publish();
+      core.setOutput('changelog', changelogBuilder.entries);
     }
   }
 
@@ -78,6 +81,7 @@ class App {
 
     return issuesData.filter((issue) => {
       const status = issue.fields.status.name;
+
       return !this.ignoreStatuses.includes(status);
     });
   }

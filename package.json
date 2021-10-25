@@ -6,7 +6,8 @@
   "license": "ISC",
   "scripts": {
     "lint": "eslint ./src",
-    "build": "ncc build index.js"
+    "build": "ncc build index.js",
+    "run": "node index.js"
   },
   "prettier": {
     "printWidth": 120
@@ -14,7 +15,10 @@
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/github": "^4.0.0",
-    "axios": "^0.21.1"
+    "axios": "^0.21.1",
+    "dotenv": "^10.0.0",
+    "lodash.orderby": "^4.6.0",
+    "moment": "^2.29.1"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.27.0",
