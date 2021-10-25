@@ -1,13 +1,13 @@
 const axios = require('axios');
-const core = require('@actions/core');
+const { getInput } = require('./helpers');
 
 class Jira {
   constructor() {
-    this.userEmail = core.getInput('jira-user-email');
-    this.apiToken = core.getInput('jira-api-token');
-    this.baseUrl = core.getInput('jira-base-url');
-    this.projectKey = core.getInput('jira-project-key');
-    this.projectId = core.getInput('jira-project-id');
+    this.userEmail = getInput('jira-user-email');
+    this.apiToken = getInput('jira-api-token');
+    this.baseUrl = getInput('jira-base-url');
+    this.projectKey = getInput('jira-project-key');
+    this.projectId = getInput('jira-project-id');
 
     if (!this.userEmail || !this.apiToken || !this.baseUrl || !this.projectKey) {
       throw new Error('Missing Jira input argument');
