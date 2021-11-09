@@ -56,8 +56,6 @@ class ChangelogBuilder {
   }
 
   toHumanReadable() {
-    this.entries.change = [];
-
     this.entries = `
       ${ChangelogBuilder.buildMarkdownSection('New Features', this.entries.feature)}
       ${ChangelogBuilder.buildMarkdownSection('Improvements', this.entries.improvement)}
