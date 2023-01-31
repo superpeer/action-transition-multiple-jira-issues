@@ -61,7 +61,7 @@ class ChangelogBuilder {
       ${ChangelogBuilder.buildMarkdownSection('Improvements', this.entries.improvement)}
       ${ChangelogBuilder.buildMarkdownSection('Changes', this.entries.change)}
       ${ChangelogBuilder.buildMarkdownSection('Fixes', this.entries.fix)}
-    `;
+    `.trim();
 
     return this;
   }
